@@ -116,7 +116,7 @@ addEventListener('popstate',()=>{ if(!vw.hidden){ closeVw(); return; } if(!gal.h
 const form=$('#waForm');
 const compose=()=>{const f=new FormData(form);const n=(f.get('name')||'').trim(),c=(f.get('company')||'').trim(),m=(f.get('msg')||'').trim();
   return `Hi Talmeez, I saw your portfolio.${n?`\nName: ${n}`:''}${c?`\nCompany: ${c}`:''}${m?`\n${m}`:''}`;};
-form.addEventListener('submit',e=>{e.preventDefault(); location.href='https://wa.me/919209339989?text='+encodeURIComponent(compose());});
+form.addEventListener('submit',e=>{e.preventDefault(); location.href='https://wa.me/919209339989?text='+encodeURIComponent('\u{1F4BC} From Talmeez portfolio website \u2014 '+compose());});
 $('#mailBtn').addEventListener('click',e=>{e.preventDefault(); location.href='mailto:talmeezahmad47@gmail.com?subject='+encodeURIComponent('Graphic designer role')+'&body='+encodeURIComponent(compose());});
 
 /* ---------- Hi circle: tap flips on touch ---------- */
