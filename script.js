@@ -72,7 +72,7 @@ function openGal(id){
     runs(g.items).forEach(r=>{
       const c3=r.k==='col'&&r.a.length>=3&&r.a.every(f=>Math.abs(f[1]/f[2]-1)<.05);
       h+=`<div class="gal__run gal__run--${r.k}${c3?' gal__run--col3':''}">`+r.a.map(f=>{const i=flat.length; flat.push({f,g:g.h});
-        const src='assets/img/'+f[0]+'?v=45', ss=f[3]?` srcset="assets/img/t/${f[0]}?v=45 720w, ${src} ${f[1]}w" sizes="${r.k==='col'?(c3?'(max-width:759px) 100vw, 33vw':'(max-width:759px) 100vw, 50vw'):'100vw'}"`:'';
+        const src='assets/img/'+f[0]+'?v=46', ss=f[3]?` srcset="assets/img/t/${f[0]}?v=46 720w, ${src} ${f[1]}w" sizes="${r.k==='col'?(c3?'(max-width:759px) 100vw, 33vw':'(max-width:759px) 100vw, 50vw'):'100vw'}"`:'';
         return `<button class="gal__it" data-i="${i}" aria-label="Open ${esc(g.h)} ${esc(f[4]||'')} image ${i+1} large"><img src="${src}"${ss} width="${f[1]}" height="${f[2]}" alt="${esc(g.h)}${f[4]?' — '+esc(f[4]):''}" loading="lazy" decoding="async" style="max-width:${r.k==='logo'?Math.min(f[1],420)+'px':'100%'}"></button>`;}).join('')+'</div>';
     });
     h+='</section>';
@@ -90,7 +90,7 @@ function closeGal(fromPop){
 }
 function showVw(i){
   vi=(i+flat.length)%flat.length; const {f,g}=flat[vi];
-  const full='assets/img/'+f[0]+'?v=45', my=vi;
+  const full='assets/img/'+f[0]+'?v=46', my=vi;
   /* show the already-loaded gallery image at once, then swap in the full-size file when it arrives */
   const th=$(`.gal__it[data-i="${vi}"] img`,gbody), quick=th&&th.complete&&th.naturalWidth>0?th.currentSrc:'';
   vimg.dataset.retry=0; vimg.onload=()=>vimg.classList.add('ready');
@@ -105,7 +105,7 @@ function showVw(i){
     pre.src=full;
   }
   $('#vwCap').textContent=g+(f[4]?' · '+f[4]:''); $('#vwCount').textContent=(vi+1)+' / '+flat.length;
-  [vi+1,vi-1].forEach(k=>{const n=flat[(k+flat.length)%flat.length]; if(n){const p=new Image(); p.src='assets/img/'+n.f[0]+'?v=45';}});
+  [vi+1,vi-1].forEach(k=>{const n=flat[(k+flat.length)%flat.length]; if(n){const p=new Image(); p.src='assets/img/'+n.f[0]+'?v=46';}});
 }
 function openVw(i){ vw.hidden=false; showVw(i); $('#vwClose').focus(); }
 function closeVw(){ vw.hidden=true; vimg.removeAttribute('src'); const b=$(`.gal__it[data-i="${vi}"]`,gbody); if(b) b.focus({preventScroll:true}); }
@@ -157,62 +157,16 @@ gsap.registerPlugin(ScrollTrigger);
 /* ---------- hero intro ---------- */
 const mm=gsap.matchMedia();
 mm.add('(min-width:701px)',()=>{ gsap.set('#heroCard',{xPercent:-50,x:0}); });
-if(!late){
-const tl=gsap.timeline({defaults:{ease:'expo.out'}});
-tl.from('.nav',{y:-80,opacity:0,duration:1},.1)
-  .to('#heroCard .hero__face--front',{clipPath:'inset(0% 0 0 0 round 16px)',duration:1.4,ease:'expo.inOut'},.1)
-  .to('#heroCard img:not(.hero__alt)',{opacity:1,scale:1,duration:1.6},.5)
-  .to('.hero__word>span',{y:0,duration:1.3,stagger:.1},.55)
-  .to('.hero .reveal-up',{opacity:1,y:0,duration:1,stagger:.1},.9)
-  .fromTo('.wave',{scale:0,z:2},{scale:1,z:2,duration:1.1,ease:'back.out(1.5)'},1.0)
-  .from('.hero__scroll',{opacity:0,y:20,duration:.8},1.2);
-tl.timeScale(1.6);
-}
+/* v46: no intro reveal — hero content is visible straight from the HTML */
 mm.add('(min-width:701px)',()=>{
   const st={trigger:'.hero',start:'top top',end:'bottom top',scrub:true};
   gsap.to('.hero__word--l',{xPercent:-18,ease:'none',scrollTrigger:st});
   gsap.to('.hero__word--r',{xPercent:18,ease:'none',scrollTrigger:st});
 });
-/* ---------- travelling portrait card: hero -> services ---------- */
-const hc=$('#heroCard'), scard=$('#svcCard'), sstick=$('.svc__stick');
-if(hc&&scard){
-  mm.add({d:'(min-width:1000px)',m:'(max-width:999px)'},ctx=>{
-    const desk=ctx.conditions.d;
-    let T=0;
-    const setTop=()=>{ if(desk){ T=Math.max(90,(innerHeight-scard.offsetHeight)/2); sstick.style.setProperty('--svcTop',T+'px'); } else T=Math.round(innerHeight*.2); };
-    setTop();
-    const geo=()=>{ // card centre with no travel applied, slot centre at the hand-off scroll
-      const st=hc.offsetParent.getBoundingClientRect(), w=hc.offsetWidth, h=hc.offsetHeight, sy=scrollY;
-      const xp=gsap.getProperty(hc,'xPercent')||0;
-      const cx=st.left+hc.offsetLeft+w/2+xp/100*w, cy=st.top+sy+hc.offsetTop+h/2;
-      const sw=scard.offsetWidth, sh=scard.offsetHeight, op=scard.offsetParent.getBoundingClientRect();
-      const mr=$('.svc__media').getBoundingClientRect(), endScroll=mr.top+sy-T;
-      const tx=op.left+scard.offsetLeft+sw/2, sTop=desk?scard.offsetTop:(op.top-mr.top)+scard.offsetTop;
-      return {x:tx-cx, y:(endScroll+T+sTop+sh/2)-cy, s:sw/w};
-    };
-    let g=geo();
-    const show=on=>{ scard.style.visibility=on?'visible':'hidden'; hc.style.visibility=on?'hidden':'visible'; };
-    show(false);
-    const xp=gsap.getProperty(hc,'xPercent')||0, P={x:0,y:0,s:1,ry:0,rx:0,rz:0,f:0};
-    const hw=hc.querySelector('.wave');
-    const render=()=>{ hc.style.transform=`translate(${P.x}px,${P.y}px) translate(${xp}%,0) perspective(1200px) rotate(${P.rz}deg) rotateY(${P.ry+P.f}deg) rotateX(${P.rx}deg) scale(${P.s})`; if(hw) hw.style.visibility=Math.abs(P.ry+P.f)>95?'hidden':''; };
-    const tl=gsap.timeline({onUpdate:render,scrollTrigger:{trigger:'.hero',start:'top top',endTrigger:'.svc__media',end:()=>'top '+T+'px',scrub:.6,invalidateOnRefresh:true,
-      onRefreshInit:()=>{setTop();},onUpdate:s=>{show(s.progress>.995); hc.style.zIndex=s.progress>.03?6:'';},onLeaveBack:()=>{show(false);hc.style.zIndex='';}}});
-    tl.to(P,{x:()=>(g=geo(),g.x),y:()=>g.y,s:()=>g.s,ease:'power1.inOut',duration:1},0)
-      .to(P,{ry:-32,rx:14,rz:-7,ease:'sine.inOut',duration:.5},0)
-      .to(P,{ry:-14,rx:0,rz:-3,ease:'sine.inOut',duration:.5},.5)
-      .to(P,{f:-180,ease:'power2.inOut',duration:.6},.2); // 3D flip: portrait -> desk, mostly mid-travel
-    return ()=>{ show(true); hc.style.visibility=''; hc.style.zIndex=''; gsap.set(hc,{xPercent:xp}); };
-  });
-}
+/* v46: portrait and services image stay in their own cards; no JS swaps or hides them. */
 /* services card: always the desk photo (no per-row image swap) */
 
-/* ---------- reveals ---------- */
-if(!late){
-$$('.split').forEach(el=>gsap.to($$('.wd',el),{y:0,duration:1.1,ease:'expo.out',stagger:.06,scrollTrigger:{trigger:el,start:'top 88%'}}));
-$$('.reveal-up').forEach(el=>{ if(el.closest('.hero')) return; gsap.to(el,{opacity:1,y:0,duration:1,ease:'expo.out',scrollTrigger:{trigger:el,start:'top 90%'}}); });
-gsap.utils.toArray('.acc__item, .exp__row, .about__links, .contact__rows, .form, .filters').forEach(el=>gsap.from(el,{opacity:0,y:40,duration:1,ease:'expo.out',scrollTrigger:{trigger:el,start:'top 92%'}}));
-}
+/* v46: no scroll reveals — every section's text and images are visible without JS */
 
 /* about text word scrub */
 const ws=$$('.about__text .w');
@@ -222,7 +176,7 @@ ScrollTrigger.create({trigger:'.about__text',start:'top 80%',end:'bottom 45%',sc
 const cards=$$('.pcard');
 cards.forEach((c,i)=>{
   if(i===cards.length-1) return;
-  gsap.to(c,{scale:.9,'--dim':.65,ease:'none',scrollTrigger:{trigger:cards[i+1],start:'top bottom',end:'top '+(parseFloat(getComputedStyle(c).top)||90)+'px',scrub:true}});
+  gsap.to(c,{scale:.9,ease:'none',scrollTrigger:{trigger:cards[i+1],start:'top bottom',end:'top '+(parseFloat(getComputedStyle(c).top)||90)+'px',scrub:true}});
 });
 
 /* ticker speed reacts to scroll velocity */
@@ -232,7 +186,6 @@ let vel=0; if(lenis) lenis.on('scroll',e=>{vel=Math.min(4,Math.abs(e.velocity)/1
 gsap.ticker.add(()=>{vel*=.92; tracks.forEach(t=>t.getAnimations().forEach(a=>a.playbackRate=1+vel))});
 
 /* footer name rise */
-if(!late) gsap.from('.foot__name',{yPercent:60,opacity:0,ease:'expo.out',duration:1.4,scrollTrigger:{trigger:'.foot',start:'top 75%'}});
 if(document.readyState==='complete') ScrollTrigger.refresh(); else addEventListener('load',()=>ScrollTrigger.refresh());
 }catch(e){ document.documentElement.classList.remove('js'); try{gsap.set('.hero__card img,.hero__face--front,.hero__word>span,.reveal-up,.split .wd,.nav',{clearProps:'all'});}catch(_){} }
 }
