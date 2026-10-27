@@ -1,6 +1,6 @@
-@font-face{font-family:"League Gothic";src:url(assets/fonts/league-gothic.woff2) format("woff2");font-weight:400;font-display:swap}
-@font-face{font-family:"Anton";src:url(assets/fonts/anton.woff2) format("woff2");font-weight:400;font-display:swap}
-@font-face{font-family:"Inter";src:url(assets/fonts/inter.woff2) format("woff2");font-weight:100 900;font-display:swap}
+@font-face{font-family:"League Gothic";src:url(assets/fonts/league-gothic.woff2?v=45) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Anton";src:url(assets/fonts/anton.woff2?v=45) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Inter";src:url(assets/fonts/inter.woff2?v=45) format("woff2");font-weight:100 900;font-display:swap}
 :root{--bg:#1b1b1b;--bg2:#1c1c1c;--card:#202020;--line:rgba(255,255,255,.1);--fg:#f2f2f0;--mut:#9b9b97;--lime:#d3f36b;--lime2:#c4e85a;--ink:#111;--r:28px;--pad:clamp(18px,4vw,64px);--disp:"League Gothic","Bebas Neue","Arial Narrow",Impact,sans-serif}
 *,*::before,*::after{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;scroll-padding-top:90px}
