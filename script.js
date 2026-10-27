@@ -1,5 +1,6 @@
 (()=>{
 const CATS = [{"id":"branding","name":"Branding","tag":"Brand identity","clients":"Pretty Please · Liberty Perfume","groups":[{"h":"Pretty Please","s":"Brand identity","items":[["pp01-1600.webp",1600,900,1],["pp02-1600.webp",1600,884,1],["pp03-1600.webp",1600,900,1],["pp04-1600.webp",1600,900,1],["pp05-1600.webp",1600,900,1],["pp06-1600.webp",1600,900,1],["pp07-1600.webp",1600,900,1],["pp08-1600.webp",1600,900,1],["pp09-1600.webp",1600,900,1]]},{"h":"Liberty Perfume","s":"Brand identity & applications","items":[["lp01-1050.webp",1050,600,1],["lp02-1052.webp",1052,600,1],["lp03-1052.webp",1052,600,1],["lp04-1052.webp",1052,600,1],["lp05-1052.webp",1052,600,1],["lp06-1052.webp",1052,600,1],["lp07-1052.webp",1052,600,1],["lp08-1052.webp",1052,600,1],["lp09-1050.webp",1050,600,1],["lp10-1052.webp",1052,600,1],["lp11-1052.webp",1052,600,1]]}],"n":20},{"id":"packaging","name":"Packaging","tag":"Packaging","clients":"Raj AAC Blocks · Magic Mop · Rocket Agarbatti · Accurate · OG Snacks","groups":[{"h":"Raj AAC Blocks","s":"Block adhesive bag","items":[["block2-1800.webp",1800,1296,1]]},{"h":"Magic Mop","s":"Box design","items":[["mop-2000.webp",2000,502,1],["mopfront-1600.webp",1600,699,1]]},{"h":"Rocket Agarbatti","s":"Musk · Fantasia · Mogra","items":[["musk-1800.webp",1800,1269,1,"Musk"],["fantasia-1100.webp",1100,2069,1,"Fantasia"],["mogra-1000.webp",1000,1967,1,"Mogra"]]},{"h":"Accurate Brake Shoes","s":"Box packaging","items":[["brake1-1800.webp",1800,1159,1],["brake2-1800.webp",1800,1159,1]]},{"h":"OG Snacks","s":"Pillow pouch","items":[["og-1100.webp",1100,2357,1]]}],"n":9},{"id":"social","name":"Social Media","tag":"Social media","clients":"Hardware Posts · Electronics Post · Event Post · Tile Adhesive Bond Post · Real Estate Post · Educational Institute Post · Festival posts","groups":[{"h":"Hardware Posts","s":"Product series","items":[["luma01.webp",1080,1080,1],["luma02.webp",1080,1080,1],["luma03.webp",1080,1080,1]]},{"h":"Electronics Post","s":"Consumer electronics","items":[["elp01-1080.webp",1080,1080,1],["elp02-1080.webp",1080,1080,1],["elp03-1080.webp",1080,1080,1],["elp04-1080.webp",1000,1000,1],["elp05-1080.webp",1080,1080,1],["elp06-1080.webp",1080,1080,1]]},{"h":"Event Post","s":"Club night","items":[["evp01-1080.webp",1080,1080,1]]},{"h":"Tile Adhesive Bond Post","s":"TYLMAX · loyalty campaign","items":[["bfs01-1080.webp",1080,1080,1],["bfs02-1080.webp",1080,1080,1],["bfs03-1080.webp",1080,1080,1],["bfs04-1080.webp",1080,1080,1],["bfs05-1080.webp",1080,1080,1]]},{"h":"Real Estate Post","s":"Instagram carousel","items":[["car01-1080.webp",1080,1350,1],["car02-1080.webp",1080,1350,1],["car03-1080.webp",1080,1350,1],["car04-1080.webp",1080,1350,1],["car05-1600.webp",1600,499,1]]},{"h":"Educational Institute Post","s":"Campaign post","items":[["fest02.webp",1080,1080,1]]},{"h":"Festival posts","s":"Dussehra · Eid al-Adha","items":[["fest01.webp",1080,1080,1,"Dussehra"],["misc01.webp",1080,1080,1,"Dussehra"],["fest03.webp",1080,1080,1,"Eid al-Adha"],["fest04.webp",1080,1350,1,"Eid al-Adha"]]}],"n":25},{"id":"banners","name":"Banners","tag":"Web & ad banners","clients":"Supplement, skincare & wellness brands","groups":[{"h":"Web & ad banners","s":"Shown at their real size","items":[["wb01.webp",845,250,1],["wb02.webp",845,250,1],["wb03.webp",845,250,1],["wb04.webp",845,250,1],["wb05.webp",845,250,1],["wb06.webp",1248,500,1],["wb07.webp",1248,500,1],["wb08.webp",1248,500,1],["wb09.webp",1248,475,1],["wb10.webp",1248,500,1],["wb11.webp",1248,450,1],["wb12.webp",1310,225,1],["wb13.webp",1310,225,1],["wb14.webp",1310,225,1],["wb15.webp",1248,500,1]]}],"n":15},{"id":"infographics","name":"Infographics","tag":"Infographics","clients":"Health & wellness","groups":[{"h":"Health & wellness","s":"Infographics","items":[["ig01.webp",715,500,0],["ig02.webp",715,685,0],["ig03.webp",900,600,1]]}],"n":3},{"id":"print","name":"Print","tag":"Print","clients":"Bondfast · TYLMAX","groups":[{"h":"Bondfast · TYLMAX","s":"TM-01 product datasheet","items":[["tm01-p1-1240.webp",1240,1753,1,"Page 1"],["tm01-p2-1240.webp",1240,1753,1,"Page 2"]]}],"n":2}];
+const MID = new Set(["block2-1800.webp", "brake1-1800.webp", "brake2-1800.webp", "car05-1600.webp", "mop-2000.webp", "mopfront-1600.webp", "musk-1800.webp", "pp01-1600.webp", "pp02-1600.webp", "pp03-1600.webp", "pp04-1600.webp", "pp05-1600.webp", "pp06-1600.webp", "pp07-1600.webp", "pp08-1600.webp", "pp09-1600.webp", "wb12.webp", "wb13.webp", "wb14.webp"]);
 const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const fine = matchMedia('(hover:hover) and (pointer:fine)').matches;
 const $=(s,c=document)=>c.querySelector(s), $$=(s,c=document)=>[...c.querySelectorAll(s)];
@@ -27,9 +28,11 @@ $$('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{
 /* ---------- cursor ---------- */
 if(fine && !RM){
   const c=$('.cursor'); let x=innerWidth/2,y=innerHeight/2,cx=x,cy=y;
-  addEventListener('mousemove',e=>{x=e.clientX;y=e.clientY;c.classList.add('on')},{passive:true});
+  let run=0;
+  const loop=()=>{cx+=(x-cx)*.2;cy+=(y-cy)*.2;c.style.transform=`translate3d(${cx}px,${cy}px,0)`;run=(Math.abs(x-cx)+Math.abs(y-cy)>.3)?requestAnimationFrame(loop):0};
+  addEventListener('mousemove',e=>{x=e.clientX;y=e.clientY;c.classList.add('on');if(!run)run=requestAnimationFrame(loop)},{passive:true});
   document.addEventListener('mouseleave',()=>c.classList.remove('on'));
-  const loop=()=>{cx+=(x-cx)*.2;cy+=(y-cy)*.2;c.style.transform=`translate3d(${cx}px,${cy}px,0)`;requestAnimationFrame(loop)};loop();
+  loop();
   $$('a,button,.pcard').forEach(el=>{el.addEventListener('mouseenter',()=>c.classList.add('is-big'));el.addEventListener('mouseleave',()=>c.classList.remove('is-big'))});
 }
 
@@ -63,6 +66,7 @@ function runs(items){ // split into consecutive runs: logo tiles, wide rows, mas
   const out=[]; items.forEach(f=>{const r=f[1]/f[2], k=f[5]?'logo':(r>=1.2?'strip':'col');
     const last=out[out.length-1]; if(last&&last.k===k) last.a.push(f); else out.push({k,a:[f]});}); return out;
 }
+window.__LQcb=()=>{ if(!gbody) return; $$('.gal__run:not(.gal__run--logo) .gal__it:not(.has-lq)',gbody).forEach(b=>{const im=$('img',b), k=im&&im.getAttribute('src').split('/').pop().split('?')[0], lq=window.__LQ[k]; if(lq&&!(im.complete&&im.naturalWidth>0)){b.style.backgroundImage=`url(data:image/webp;base64,${lq})`; b.classList.add('has-lq');}}); };
 function openGal(id){
   const c=CATS.find(x=>x.id===id); if(!c) return; cur=c; lastFocus=document.activeElement;
   $('#galTag').textContent=c.tag; $('#galTitle').textContent=c.name; $('#galN').textContent=c.n+(c.id==='print'?' pages':' designs');
@@ -72,12 +76,13 @@ function openGal(id){
     runs(g.items).forEach(r=>{
       const c3=r.k==='col'&&r.a.length>=3&&r.a.every(f=>Math.abs(f[1]/f[2]-1)<.05);
       h+=`<div class="gal__run gal__run--${r.k}${c3?' gal__run--col3':''}">`+r.a.map(f=>{const i=flat.length; flat.push({f,g:g.h});
-        const src='assets/img/'+f[0]+'?v=46', ss=f[3]?` srcset="assets/img/t/${f[0]}?v=46 720w, ${src} ${f[1]}w" sizes="${r.k==='col'?(c3?'(max-width:759px) 100vw, 33vw':'(max-width:759px) 100vw, 50vw'):'100vw'}"`:'';
-        return `<button class="gal__it" data-i="${i}" aria-label="Open ${esc(g.h)} ${esc(f[4]||'')} image ${i+1} large"><img src="${src}"${ss} width="${f[1]}" height="${f[2]}" alt="${esc(g.h)}${f[4]?' — '+esc(f[4]):''}" loading="lazy" decoding="async" style="max-width:${r.k==='logo'?Math.min(f[1],420)+'px':'100%'}"></button>`;}).join('')+'</div>';
+        const src='assets/img/'+f[0]+'?v=47', mid=MID.has(f[0])?`, assets/img/m/${f[0]}?v=47 1080w`:'', ss=f[3]?` srcset="assets/img/t/${f[0]}?v=47 720w${mid}, ${src} ${f[1]}w" sizes="${r.k==='col'?(c3?'(max-width:759px) calc(100vw - 36px), 33vw':'(max-width:759px) calc(100vw - 36px), 50vw'):(r.k==='strip'?'(max-width:759px) calc(100vw - 36px), min(1400px, 92vw)':'100vw')}"`:'';
+        const lq=r.k!=='logo'&&window.__LQ&&__LQ[f[0]], bg=lq?` style="background-image:url(data:image/webp;base64,${lq})"`:'', pri=i<2?' loading="eager" fetchpriority="high"':' loading="lazy"';
+        return `<button class="gal__it${lq?' has-lq':''}" data-i="${i}"${bg} aria-label="Open ${esc(g.h)} ${esc(f[4]||'')} image ${i+1} large"><img src="${src}"${ss} width="${f[1]}" height="${f[2]}" alt="${esc(g.h)}${f[4]?' — '+esc(f[4]):''}"${pri} decoding="async" style="max-width:${r.k==='logo'?Math.min(f[1],420)+'px':'100%'}"></button>`;}).join('')+'</div>';
     });
     h+='</section>';
   });
-  gbody.innerHTML=h; gbody.scrollTop=0; gal.hidden=false; document.documentElement.classList.add('modal-open'); if(lenis) lenis.stop();
+  gbody.innerHTML=h; gbody.scrollTop=0; if(window.__tmWatch) __tmWatch(gbody); gal.hidden=false; document.documentElement.classList.add('modal-open'); if(lenis) lenis.stop();
   requestAnimationFrame(()=>gal.classList.add('is-on'));
   if(history.pushState) history.pushState({gal:id},'' ,'#work-'+id);
   $('#galClose').focus();
@@ -90,7 +95,7 @@ function closeGal(fromPop){
 }
 function showVw(i){
   vi=(i+flat.length)%flat.length; const {f,g}=flat[vi];
-  const full='assets/img/'+f[0]+'?v=46', my=vi;
+  const full='assets/img/'+f[0]+'?v=47', my=vi;
   /* show the already-loaded gallery image at once, then swap in the full-size file when it arrives */
   const th=$(`.gal__it[data-i="${vi}"] img`,gbody), quick=th&&th.complete&&th.naturalWidth>0?th.currentSrc:'';
   vimg.dataset.retry=0; vimg.onload=()=>vimg.classList.add('ready');
@@ -105,7 +110,7 @@ function showVw(i){
     pre.src=full;
   }
   $('#vwCap').textContent=g+(f[4]?' · '+f[4]:''); $('#vwCount').textContent=(vi+1)+' / '+flat.length;
-  [vi+1,vi-1].forEach(k=>{const n=flat[(k+flat.length)%flat.length]; if(n){const p=new Image(); p.src='assets/img/'+n.f[0]+'?v=46';}});
+  [vi+1,vi-1].forEach(k=>{const n=flat[(k+flat.length)%flat.length]; if(n){const p=new Image(); p.src='assets/img/'+n.f[0]+'?v=47';}});
 }
 function openVw(i){ vw.hidden=false; showVw(i); $('#vwClose').focus(); }
 function closeVw(){ vw.hidden=true; vimg.removeAttribute('src'); const b=$(`.gal__it[data-i="${vi}"]`,gbody); if(b) b.focus({preventScroll:true}); }
@@ -132,6 +137,10 @@ const compose=()=>{const f=new FormData(form);const n=(f.get('name')||'').trim()
   return `Hi Talmeez, I saw your portfolio.${n?`\nName: ${n}`:''}${c?`\nCompany: ${c}`:''}${m?`\n${m}`:''}`;};
 form.addEventListener('submit',e=>{e.preventDefault(); location.href='https://wa.me/919209339989?text='+encodeURIComponent('\u{1F4BC} From Talmeez portfolio website \u2014 '+compose());});
 $('#mailBtn').addEventListener('click',e=>{e.preventDefault(); location.href='mailto:talmeezahmad47@gmail.com?subject='+encodeURIComponent('Graphic designer role')+'&body='+encodeURIComponent(compose());});
+
+/* ---------- looping CSS effects pause while off screen (no visual change on screen) ---------- */
+if('IntersectionObserver' in window){ const po=new IntersectionObserver(es=>es.forEach(e=>e.target.classList.toggle('is-off',!e.isIntersecting)));
+  $$('.ticker,.hero,.nav').forEach(el=>po.observe(el)); }
 
 /* ---------- Hi circle: tap flips on touch ---------- */
 const wv=$('.wave');
@@ -183,7 +192,8 @@ cards.forEach((c,i)=>{
 const tracks=$$('.ticker__track');
 tracks.forEach(t=>t.getAnimations().forEach(a=>a.playbackRate=1));
 let vel=0; if(lenis) lenis.on('scroll',e=>{vel=Math.min(4,Math.abs(e.velocity)/12)});
-gsap.ticker.add(()=>{vel*=.92; tracks.forEach(t=>t.getAnimations().forEach(a=>a.playbackRate=1+vel))});
+const tanim=tracks.map(t=>t.getAnimations()).flat(); let lastR=1;
+gsap.ticker.add(()=>{vel*=.92; if(vel<.005) vel=0; const pr=1+vel; if(Math.abs(pr-lastR)<.002) return; lastR=pr; tanim.forEach(a=>a.playbackRate=pr)});
 
 /* footer name rise */
 if(document.readyState==='complete') ScrollTrigger.refresh(); else addEventListener('load',()=>ScrollTrigger.refresh());

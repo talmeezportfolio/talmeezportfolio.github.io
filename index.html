@@ -10,10 +10,10 @@
 <meta property="og:title" content="Talmeez Ahmad · Senior Graphic Designer">
 <meta property="og:description" content="Brand identity, packaging, social media and print production.">
 <meta property="og:image" content="https://talmeez.sites.tab.bot/og.jpg">
-<link rel="icon" href="assets/img/favicon.png?v=46">
-<link rel="preload" href="assets/fonts/league-gothic.woff2?v=46" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="assets/fonts/inter.woff2?v=46" as="font" type="font/woff2" crossorigin>
-<link rel="preload" as="image" href="assets/img/talmeez-480.webp?v=46" imagesrcset="assets/img/talmeez-480.webp?v=46 480w, assets/img/talmeez-800.webp?v=46 800w" imagesizes="(max-width: 700px) 76vw, 420px">
+<link rel="icon" href="assets/img/favicon.png?v=47">
+<link rel="preload" href="assets/fonts/league-gothic.woff2?v=47" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/inter.woff2?v=47" as="font" type="font/woff2" crossorigin>
+<link rel="preload" as="image" href="assets/img/talmeez-480.webp?v=47" imagesrcset="assets/img/talmeez-480.webp?v=47 480w, assets/img/talmeez-800.webp?v=47 800w" imagesizes="(max-width: 700px) 76vw, 420px">
 <script>
 document.addEventListener('DOMContentLoaded',function(){window.__tmDCL=1;});
 document.documentElement.classList.add('js');if(matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('rm');
@@ -26,6 +26,17 @@ function retry(img){var n=+(img.dataset.retry||0);if(n>=D.length)return;img.data
   var s=img.getAttribute('src');if(s)img.setAttribute('src',bust(s,n+1));},D[n]);}
 addEventListener('error',function(e){var t=e.target;if(t&&t.tagName==='IMG'&&t.getAttribute('src'))retry(t);},true);
 addEventListener('online',function(){var a=document.images;for(var i=0;i<a.length;i++){var im=a[i];if(im.getAttribute('src')&&im.complete&&im.naturalWidth===0){im.dataset.retry=0;retry(im);}}});
+/* a picture request that hangs on a weak connection (no answer, no error): once it has been on screen 10 s without arriving, fetch it again under a new URL beside the first and show whichever lands */
+if('IntersectionObserver' in window){var W=new IntersectionObserver(function(es){es.forEach(function(e){var im=e.target;
+ if(im.complete&&im.naturalWidth>0){W.unobserve(im);return;}
+ if(e.isIntersecting){if(!im.__st)im.__st=setTimeout(function(){stall(im);},10000);}else{clearTimeout(im.__st);im.__st=0;}});});
+ function pick(im){var ss=im.getAttribute('srcset'),need=im.getBoundingClientRect().width*(window.devicePixelRatio||1),best='',bw=1e9,mx='',mw=0;if(ss)ss.split(',').forEach(function(c){c=c.trim().split(/\s+/);var w=parseInt(c[1])||0;if(w>=need&&w<bw){bw=w;best=c[0];}if(w>mw){mw=w;mx=c[0];}});return best||mx||im.getAttribute('src');}
+ function stall(im){im.__st=0;if(im.complete&&im.naturalWidth>0)return;var n=+(im.dataset.stall||0);if(n>=3||!navigator.onLine){if(n<3)im.__st=setTimeout(function(){stall(im);},5000);return;}
+  im.dataset.stall=n+1;var u=im.currentSrc||pick(im);if(!u)return;var p=new Image();
+  p.onload=function(){if(im.complete&&im.naturalWidth>0)return;im.removeAttribute('srcset');im.src=p.src;};p.src=bust(u,90+n);
+  im.__st=setTimeout(function(){stall(im);},15000);}
+ window.__tmWatch=function(r){var a=(r||document).getElementsByTagName('img');for(var i=0;i<a.length;i++){if(!a[i].__w){a[i].__w=1;W.observe(a[i]);}}};
+ document.addEventListener('DOMContentLoaded',function(){window.__tmWatch();});}
 })();
 /* retry a stylesheet or script whose download was dropped */
 window.__tmR=function(el){var n=+(el.getAttribute('data-r')||0);if(n>=4)return;var D=[1500,4000,9000,20000],u=(el.getAttribute('src')||el.getAttribute('href')).replace(/&r=\d+/,'');
@@ -33,9 +44,9 @@ window.__tmR=function(el){var n=+(el.getAttribute('data-r')||0);if(n>=4)return;v
   x.setAttribute('data-r',n+1);x.onerror=function(){window.__tmR(x)};(el.parentNode||document.head).appendChild(x);},D[n]);};
 /* re-fetch a web font whose download was dropped */
 addEventListener('load',function(){if(!document.fonts||!window.FontFace)return;var F={'League Gothic':['league-gothic','400'],'Anton':['anton','400'],'Inter':['inter','100 900']},k=0;
- (function chk(){k++;document.fonts.forEach(function(f){var m=F[f.family.replace(/"/g,'')];if(m&&f.status==='error'&&!m.d){m.d=1;var n=new FontFace(f.family.replace(/"/g,''),'url(assets/fonts/'+m[0]+'.woff2?v=46&r='+k+')',{weight:m[1],display:'swap'});document.fonts.add(n);n.load().catch(function(){m.d=0;});}});if(k<4)setTimeout(chk,[1500,4000,9000][k-1]||9000);})();});
+ (function chk(){k++;document.fonts.forEach(function(f){var m=F[f.family.replace(/"/g,'')];if(m&&f.status==='error'&&!m.d){m.d=1;var n=new FontFace(f.family.replace(/"/g,''),'url(assets/fonts/'+m[0]+'.woff2?v=47&r='+k+')',{weight:m[1],display:'swap'});document.fonts.add(n);n.load().catch(function(){m.d=0;});}});if(k<4)setTimeout(chk,[1500,4000,9000][k-1]||9000);})();});
 </script>
-<link rel="stylesheet" href="styles.css?v=46" onerror="__tmR(this)">
+<link rel="stylesheet" href="styles.css?v=47" onerror="__tmR(this)">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -44,7 +55,7 @@ addEventListener('load',function(){if(!document.fonts||!window.FontFace)return;v
 
 <header class="nav" id="nav">
   <a class="nav__me" href="#home" aria-label="Talmeez Ahmad, back to top">
-    <img src="assets/img/talmeez-480.webp?v=46" alt="" width="40" height="40">
+    <img src="assets/img/talmeez-480.webp?v=47" alt="" width="40" height="40">
     <span class="nav__status"><i></i>Available for work</span>
   </a>
   <nav class="nav__links" aria-label="Primary">
@@ -64,11 +75,11 @@ addEventListener('load',function(){if(!document.fonts||!window.FontFace)return;v
     </h1>
     <div class="hero__card" id="heroCard">
       <div class="hero__face hero__face--front">
-        <img src="assets/img/talmeez-480.webp?v=46" srcset="assets/img/talmeez-480.webp?v=46 480w, assets/img/talmeez-800.webp?v=46 800w" sizes="(max-width: 700px) 76vw, 420px" alt="Portrait of Talmeez Ahmad" width="800" height="1000" fetchpriority="high">
+        <img src="assets/img/talmeez-480.webp?v=47" srcset="assets/img/talmeez-480.webp?v=47 480w, assets/img/talmeez-800.webp?v=47 800w" sizes="(max-width: 700px) 76vw, 420px" alt="Portrait of Talmeez Ahmad" width="800" height="1000" fetchpriority="high">
         <i class="hero__dot" aria-hidden="true"></i>
       </div>
       <div class="hero__face hero__face--back" aria-hidden="true">
-        <img class="hero__alt" src="assets/img/svc-desk-840.webp?v=46" alt="" width="600" height="840" aria-hidden="true" decoding="async" fetchpriority="low">
+        <img class="hero__alt" src="assets/img/svc-desk-840.webp?v=47" alt="" width="600" height="840" aria-hidden="true" decoding="async" fetchpriority="low">
         <i class="hero__dot"></i>
       </div>
       <a class="wave" href="#contact" aria-label="Say hi, go to contact"><span class="wave__flip" aria-hidden="true"><span class="wave__face wave__front"><svg class="wave__hand" viewBox="0 0 24 24" width="46" height="46" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M7.5 12.5V6.8a1.3 1.3 0 0 1 2.6 0v4.7M10.1 11V4.9a1.3 1.3 0 0 1 2.6 0V11M12.7 11V5.6a1.3 1.3 0 0 1 2.6 0V12M15.3 11.2V8.1a1.3 1.3 0 0 1 2.6 0v5.4c0 4-2.6 6.8-6.3 6.8-2.6 0-4-1.2-5.5-3.3L3.9 13.6a1.3 1.3 0 0 1 2-1.6l1.6 1.9M18.6 3.6c1 .6 1.7 1.5 2 2.6M3.4 6.3c.3-1.1 1-2 2-2.6"/></svg></span><span class="wave__face wave__back">Hi</span></span></a>
@@ -125,7 +136,7 @@ addEventListener('load',function(){if(!document.fonts||!window.FontFace)return;v
   </div>
   <div class="svc__media" aria-hidden="true">
     <div class="svc__stick"><div class="svc__card" id="svcCard">
-      <img class="is-on" src="assets/img/svc-desk-840.webp?v=46" alt="" width="600" height="840" decoding="async">
+      <img class="is-on" src="assets/img/svc-desk-840.webp?v=47" alt="" width="600" height="840" decoding="async">
       <i class="hero__dot"></i>
     </div></div>
   </div>
@@ -337,9 +348,10 @@ addEventListener('load',function(){if(!document.fonts||!window.FontFace)return;v
   <button class="vw__nav vw__nav--next" id="vwNext" aria-label="Next image">→</button>
 </div>
 
-<script src="script.js?v=46" defer onerror="__tmR(this)"></script>
-<script src="assets/js/gsap.min.js?v=46" defer onerror="__tmR(this)"></script>
-<script src="assets/js/ScrollTrigger.min.js?v=46" defer onerror="__tmR(this)"></script>
-<script src="assets/js/lenis.min.js?v=46" defer onerror="__tmR(this)"></script>
+<script src="script.js?v=47" defer onerror="__tmR(this)"></script>
+<script>addEventListener('load',function(){var x=document.createElement('script');x.src='assets/js/lq.js?v=47';x.async=true;document.body.appendChild(x);});</script>
+<script src="assets/js/gsap.min.js?v=47" defer onerror="__tmR(this)"></script>
+<script src="assets/js/ScrollTrigger.min.js?v=47" defer onerror="__tmR(this)"></script>
+<script src="assets/js/lenis.min.js?v=47" defer onerror="__tmR(this)"></script>
 </body>
 </html>

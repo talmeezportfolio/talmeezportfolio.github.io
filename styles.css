@@ -1,6 +1,6 @@
-@font-face{font-family:"League Gothic";src:url(assets/fonts/league-gothic.woff2?v=46) format("woff2");font-weight:400;font-display:swap}
-@font-face{font-family:"Anton";src:url(assets/fonts/anton.woff2?v=46) format("woff2");font-weight:400;font-display:swap}
-@font-face{font-family:"Inter";src:url(assets/fonts/inter.woff2?v=46) format("woff2");font-weight:100 900;font-display:swap}
+@font-face{font-family:"League Gothic";src:url(assets/fonts/league-gothic.woff2?v=47) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Anton";src:url(assets/fonts/anton.woff2?v=47) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Inter";src:url(assets/fonts/inter.woff2?v=47) format("woff2");font-weight:100 900;font-display:swap}
 :root{--bg:#1b1b1b;--bg2:#1c1c1c;--card:#202020;--line:rgba(255,255,255,.1);--fg:#f2f2f0;--mut:#9b9b97;--lime:#d3f36b;--lime2:#c4e85a;--ink:#111;--r:28px;--pad:clamp(18px,4vw,64px);--disp:"League Gothic","Bebas Neue","Arial Narrow",Impact,sans-serif}
 *,*::before,*::after{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;scroll-padding-top:90px}
@@ -525,3 +525,8 @@ html.modal-open,html.modal-open body{overflow:hidden}
 @media (min-width:700px) and (max-width:999px){.testi__grid{grid-template-columns:repeat(2,minmax(0,1fr))}.tcard--wide{grid-column:span 2}}
 @media (min-width:1000px){.testi__grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}.tcard,.tstat{min-height:360px}.tcard--wide{grid-column:span 2}.tcard--wide .tcard__quote p{font-size:clamp(20px,1.7vw,26px);line-height:1.45;max-width:38ch}}
 @media (max-width:699px){.tstat{min-height:220px}.tcard{min-height:0}}
+
+/* v47: while a gallery picture is still arriving, its tiny blurred preview sits behind it instead of an empty dark box */
+.gal__run .gal__it.has-lq{background-size:100% 100%;background-repeat:no-repeat}
+/* v47: looping effects pause only while their section is off screen */
+.is-off .ticker__track,.is-off.ticker .ticker__track,.hero.is-off .wave__hand,.hero.is-off .wave__flip,.hero.is-off .hero__scroll i,.nav.is-off .nav__status i{animation-play-state:paused}
