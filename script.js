@@ -26,7 +26,7 @@ $$('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{
 /* v26: nav stays steady — no scroll-driven swap */
 
 /* ---------- cursor ---------- */
-if(fine && !RM){
+if(fine){
   const c=$('.cursor'); let x=innerWidth/2,y=innerHeight/2,cx=x,cy=y;
   let run=0;
   const loop=()=>{cx+=(x-cx)*.2;cy+=(y-cy)*.2;c.style.transform=`translate3d(${cx}px,${cy}px,0)`;run=(Math.abs(x-cx)+Math.abs(y-cy)>.3)?requestAnimationFrame(loop):0};
@@ -76,7 +76,7 @@ function openGal(id){
     runs(g.items).forEach(r=>{
       const c3=r.k==='col'&&r.a.length>=3&&r.a.every(f=>Math.abs(f[1]/f[2]-1)<.05);
       h+=`<div class="gal__run gal__run--${r.k}${c3?' gal__run--col3':''}">`+r.a.map(f=>{const i=flat.length; flat.push({f,g:g.h});
-        const src='assets/img/'+f[0]+'?v=47', mid=MID.has(f[0])?`, assets/img/m/${f[0]}?v=47 1080w`:'', ss=f[3]?` srcset="assets/img/t/${f[0]}?v=47 720w${mid}, ${src} ${f[1]}w" sizes="${r.k==='col'?(c3?'(max-width:759px) calc(100vw - 36px), 33vw':'(max-width:759px) calc(100vw - 36px), 50vw'):(r.k==='strip'?'(max-width:759px) calc(100vw - 36px), min(1400px, 92vw)':'100vw')}"`:'';
+        const src='assets/img/'+f[0]+'?v=48', mid=MID.has(f[0])?`, assets/img/m/${f[0]}?v=48 1080w`:'', ss=f[3]?` srcset="assets/img/t/${f[0]}?v=48 720w${mid}, ${src} ${f[1]}w" sizes="${r.k==='col'?(c3?'(max-width:759px) calc(100vw - 36px), 33vw':'(max-width:759px) calc(100vw - 36px), 50vw'):(r.k==='strip'?'(max-width:759px) calc(100vw - 36px), min(1400px, 92vw)':'100vw')}"`:'';
         const lq=r.k!=='logo'&&window.__LQ&&__LQ[f[0]], bg=lq?` style="background-image:url(data:image/webp;base64,${lq})"`:'', pri=i<2?' loading="eager" fetchpriority="high"':' loading="lazy"';
         return `<button class="gal__it${lq?' has-lq':''}" data-i="${i}"${bg} aria-label="Open ${esc(g.h)} ${esc(f[4]||'')} image ${i+1} large"><img src="${src}"${ss} width="${f[1]}" height="${f[2]}" alt="${esc(g.h)}${f[4]?' — '+esc(f[4]):''}"${pri} decoding="async" style="max-width:${r.k==='logo'?Math.min(f[1],420)+'px':'100%'}"></button>`;}).join('')+'</div>';
     });
@@ -95,7 +95,7 @@ function closeGal(fromPop){
 }
 function showVw(i){
   vi=(i+flat.length)%flat.length; const {f,g}=flat[vi];
-  const full='assets/img/'+f[0]+'?v=47', my=vi;
+  const full='assets/img/'+f[0]+'?v=48', my=vi;
   /* show the already-loaded gallery image at once, then swap in the full-size file when it arrives */
   const th=$(`.gal__it[data-i="${vi}"] img`,gbody), quick=th&&th.complete&&th.naturalWidth>0?th.currentSrc:'';
   vimg.dataset.retry=0; vimg.onload=()=>vimg.classList.add('ready');
@@ -110,7 +110,7 @@ function showVw(i){
     pre.src=full;
   }
   $('#vwCap').textContent=g+(f[4]?' · '+f[4]:''); $('#vwCount').textContent=(vi+1)+' / '+flat.length;
-  [vi+1,vi-1].forEach(k=>{const n=flat[(k+flat.length)%flat.length]; if(n){const p=new Image(); p.src='assets/img/'+n.f[0]+'?v=47';}});
+  [vi+1,vi-1].forEach(k=>{const n=flat[(k+flat.length)%flat.length]; if(n){const p=new Image(); p.src='assets/img/'+n.f[0]+'?v=48';}});
 }
 function openVw(i){ vw.hidden=false; showVw(i); $('#vwClose').focus(); }
 function closeVw(){ vw.hidden=true; vimg.removeAttribute('src'); const b=$(`.gal__it[data-i="${vi}"]`,gbody); if(b) b.focus({preventScroll:true}); }
@@ -154,50 +154,121 @@ $$('.split').forEach(el=>{
 const scrub=$('.scrub');
 if(scrub){ scrub.innerHTML=scrub.textContent.trim().split(/\s+/).map(w=>`<span class="w">${w}</span>`).join(' '); }
 
-/* ---------- motion: runs once the (deferred) animation libraries are in; page content never waits for it ---------- */
+/* ---------- motion: runs once the (deferred) animation libraries are in; page content never waits for it ----------
+   v48: entry/scroll motion is back. Every hidden starting state is set by GSAP itself, only after it is running,
+   and each one has its own watchdog, so if anything fails the content is simply visible (fail-open).
+   Reduced-motion (e.g. Android battery saver) keeps the motion, just slower and with smaller moves. */
 function motion(){
 hasG = typeof window.gsap!=='undefined' && typeof window.ScrollTrigger!=='undefined';
 initSmooth();
-if(!hasG || RM){ window.__tmMotion=1; if(!hasG) document.documentElement.classList.remove('js'); $$('.about__text .w').forEach(w=>w.classList.add('on')); return; }
-const late=!!window.__tmLate || !document.documentElement.classList.contains('js'); window.__tmMotion=1;
+if(!hasG){ window.__tmMotion=1; document.documentElement.classList.remove('js'); $$('.about__text .w').forEach(w=>w.classList.add('on')); return; }
+window.__tmMotion=1;
+const K=RM?1.7:1, D=RM?.55:1; /* reduced motion: slower, shorter moves */
+const H=document.documentElement;
+const safe=[];  /* every element GSAP hides, cleared on any failure */
+const showAll=()=>{ try{ gsap.killTweensOf(safe); gsap.set(safe,{clearProps:'opacity,visibility,clipPath,transform'}); }catch(_){ } H.classList.remove('mo'); $$('.about__text .w').forEach(w=>w.classList.add('on')); };
 try{
 gsap.registerPlugin(ScrollTrigger);
-
-/* ---------- hero intro ---------- */
+H.classList.add('mo');
 const mm=gsap.matchMedia();
 mm.add('(min-width:701px)',()=>{ gsap.set('#heroCard',{xPercent:-50,x:0}); });
-/* v46: no intro reveal — hero content is visible straight from the HTML */
-mm.add('(min-width:701px)',()=>{
-  const st={trigger:'.hero',start:'top top',end:'bottom top',scrub:true};
-  gsap.to('.hero__word--l',{xPercent:-18,ease:'none',scrollTrigger:st});
-  gsap.to('.hero__word--r',{xPercent:18,ease:'none',scrollTrigger:st});
+
+/* ---------- hero intro (only when the page opens at the top) ---------- */
+if(scrollY<innerHeight*.6){
+  const hf=$('#heroCard .hero__face--front'), himg=$('#heroCard .hero__face--front img'), hw=$$('.hero__word>span'), hr=$$('.hero .reveal-up'), wv2=$('.hero__card .wave'), hs=$('.hero__scroll'), nv=$('.nav');
+  const all=[hf,himg,wv2,hs,nv,...hw,...hr].filter(Boolean); safe.push(...all);
+  const tl=gsap.timeline({defaults:{ease:'expo.out'},onComplete:()=>gsap.set(all,{clearProps:'opacity,visibility,clipPath,transform'})});
+  if(nv) tl.fromTo(nv,{y:-80*D,opacity:0},{y:0,opacity:1,duration:1,clearProps:'transform,opacity'},.1);
+  if(hf) tl.fromTo(hf,{clipPath:'inset(100% 0% 0% 0% round 16px)'},{clipPath:'inset(0% 0% 0% 0% round 16px)',duration:1.4,ease:'expo.inOut'},.1);
+  if(himg) tl.fromTo(himg,{scale:1.18,opacity:0},{scale:1,opacity:1,duration:1.6},.45);
+  if(hw.length) tl.fromTo(hw,{yPercent:105*D},{yPercent:0,duration:1.3,stagger:.1},.55);
+  if(hr.length) tl.fromTo(hr,{opacity:0,y:28*D},{opacity:1,y:0,duration:1,stagger:.1},.9);
+  if(wv2) tl.fromTo(wv2,{scale:0},{scale:1,duration:1.1,ease:'back.out(1.6)'},1.0);
+  if(hs) tl.fromTo(hs,{opacity:0,y:20*D},{opacity:1,y:0,duration:.8},1.2);
+  tl.timeScale(1.5/K);
+  setTimeout(()=>{ if(tl.progress()<1) tl.progress(1); },4500*K); /* watchdog */
+}
+
+/* ---------- hero portrait: gentle float, mouse tilt, scroll tilt ---------- */
+const hcard=$('#heroCard'), hface=$('#heroCard .hero__face--front');
+if(hface){
+  gsap.to(hface,{y:-10*D,rotation:RM?.6:1.2,duration:2.6*K,ease:'sine.inOut',yoyo:true,repeat:-1,delay:1.4});
+  if(fine){
+    const hero=$('.hero'); gsap.set(hface,{transformPerspective:1000});
+    const rx=gsap.quickTo(hface,'rotationX',{duration:.8,ease:'power3.out'}), ry=gsap.quickTo(hface,'rotationY',{duration:.8,ease:'power3.out'});
+    hero.addEventListener('mousemove',e=>{ const r=hcard.getBoundingClientRect(), dx=(e.clientX-(r.left+r.width/2))/innerWidth, dy=(e.clientY-(r.top+r.height/2))/innerHeight; ry(dx*18*D); rx(-dy*14*D); },{passive:true});
+    hero.addEventListener('mouseleave',()=>{ rx(0); ry(0); });
+  }
+}
+if(hcard){
+  mm.add({d:'(min-width:701px)',m:'(max-width:700px)'},ctx=>{
+    const d=ctx.conditions.d;
+    gsap.fromTo(hcard,{rotation:0,rotationY:0,y:0,scale:1},{rotation:-5*D,rotationY:d?-16*D:-10*D,transformPerspective:1200,y:(d?90:50)*D,scale:.92,ease:'none',
+      scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:.6}});
+  });
+}
+/* services desk card swings in */
+const sc=$('#svcCard');
+if(sc) gsap.fromTo(sc,{transformPerspective:1200,rotationY:28*D,rotation:7*D,y:90*D,scale:.9},{transformPerspective:1200,rotationY:-14,rotation:-3,y:0,scale:1,ease:'none',
+  scrollTrigger:{trigger:'.svc__media',start:'top bottom',end:'top 30%',scrub:.6}});
+
+mm.add({d:'(min-width:701px)',m:'(max-width:700px)'},ctx=>{
+  const a=ctx.conditions.d?18:8, st={trigger:'.hero',start:'top top',end:'bottom top',scrub:true};
+  gsap.to('.hero__word--l',{xPercent:-a*D,ease:'none',scrollTrigger:st});
+  gsap.to('.hero__word--r',{xPercent:a*D,ease:'none',scrollTrigger:st});
 });
-/* v46: portrait and services image stay in their own cards; no JS swaps or hides them. */
-/* services card: always the desk photo (no per-row image swap) */
 
-/* v46: no scroll reveals — every section's text and images are visible without JS */
+/* ---------- scroll reveals: hidden only while JS runs, revealed by IntersectionObserver, watchdog per element ---------- */
+if('IntersectionObserver' in window){
+  const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting||e.boundingClientRect.top<0){ io.unobserve(e.target); e.target.__go&&e.target.__go(); } }),{rootMargin:'0px 0px -8% 0px'});
+  const reveal=(el,targets,from,to)=>{
+    targets=targets.filter(Boolean); if(!targets.length) return;
+    const r=el.getBoundingClientRect(); if(r.top<innerHeight*.92&&r.bottom>0&&el.closest('.hero')) return;
+    safe.push(...targets); gsap.set(targets,from);
+    let done=0; el.__go=()=>{ if(done) return; done=1; gsap.to(targets,Object.assign({ease:'expo.out',overwrite:'auto',onComplete:()=>gsap.set(targets,{clearProps:'opacity,visibility,transform'})},to,{duration:(to.duration||1)*K})); };
+    io.observe(el);
+  };
+  $$('.split').forEach(el=>reveal(el,$$('.wd',el),{yPercent:105*D},{yPercent:0,duration:1.1,stagger:.06}));
+  $$('.reveal-up').forEach(el=>{ if(el.closest('.hero')) return; reveal(el,[el],{opacity:0,y:34*D},{opacity:1,y:0,duration:1}); });
+  $$('.acc__item, .exp__row, .about__links, .contact__rows, .form, .filters').forEach(el=>reveal(el,[el],{opacity:0,y:44*D},{opacity:1,y:0,duration:1}));
+  const fn=$('.foot__name'); if(fn) reveal($('.foot')||fn,[fn],{yPercent:60*D,opacity:0},{yPercent:0,opacity:1,duration:1.4});
+  /* watchdog: anything already scrolled past or on screen but still hidden is shown */
+  const sweep=()=>$$('.split,.reveal-up,.acc__item,.exp__row,.about__links,.contact__rows,.form,.filters,.foot').forEach(el=>{ if(el.__go&&el.getBoundingClientRect().top<innerHeight) el.__go(); });
+  addEventListener('load',()=>setTimeout(sweep,600)); setTimeout(sweep,5000); addEventListener('scroll',()=>{ clearTimeout(sweep.t); sweep.t=setTimeout(sweep,400); },{passive:true});
+}
 
-/* about text word scrub */
+/* about text word scrub (words light up as you scroll) */
 const ws=$$('.about__text .w');
-ScrollTrigger.create({trigger:'.about__text',start:'top 80%',end:'bottom 45%',scrub:true,onUpdate:s=>{const n=Math.round(s.progress*ws.length);ws.forEach((w,i)=>w.classList.toggle('on',i<n))}});
+ScrollTrigger.create({trigger:'.about__text',start:'top 85%',end:'bottom 50%',scrub:true,onUpdate:s=>{const n=Math.round(s.progress*ws.length);ws.forEach((w,i)=>w.classList.toggle('on',i<n))},
+  onLeave:()=>ws.forEach(w=>w.classList.add('on'))});
 
-/* ---------- stacked project cards ---------- */
+/* ---------- stacked project cards: shrink + dim as the next one slides over; picture drifts inside ---------- */
 const cards=$$('.pcard');
 cards.forEach((c,i)=>{
+  const m=$('.pcard__media',c);
+  if(m) gsap.fromTo(m,{scale:1.14,yPercent:-4*D},{scale:1,yPercent:0,ease:'none',scrollTrigger:{trigger:c,start:'top bottom',end:'top 20%',scrub:true}});
   if(i===cards.length-1) return;
-  gsap.to(c,{scale:.9,ease:'none',scrollTrigger:{trigger:cards[i+1],start:'top bottom',end:'top '+(parseFloat(getComputedStyle(c).top)||90)+'px',scrub:true}});
+  gsap.to(c,{scale:.9,'--dim':.6,ease:'none',scrollTrigger:{trigger:cards[i+1],start:'top bottom',end:'top '+(parseFloat(getComputedStyle(c).top)||90)+'px',scrub:true}});
+});
+/* card hover tilt (mouse) */
+if(fine) cards.forEach(c=>{
+  const n=$('.pcard__name',c), m=$('.pcard__media img',c); if(!n&&!m) return;
+  c.addEventListener('mousemove',e=>{ const r=c.getBoundingClientRect(), dx=(e.clientX-r.left)/r.width-.5, dy=(e.clientY-r.top)/r.height-.5;
+    if(n) gsap.to(n,{x:dx*30*D,y:dy*18*D,duration:.8,ease:'power3.out',overwrite:'auto'});
+    if(m) gsap.to(m,{x:-dx*24*D,y:-dy*16*D,duration:1,ease:'power3.out',overwrite:'auto'}); },{passive:true});
+  c.addEventListener('mouseleave',()=>{ if(n) gsap.to(n,{x:0,y:0,duration:.8,ease:'power3.out'}); if(m) gsap.to(m,{x:0,y:0,duration:1,ease:'power3.out'}); });
 });
 
 /* ticker speed reacts to scroll velocity */
 const tracks=$$('.ticker__track');
 tracks.forEach(t=>t.getAnimations().forEach(a=>a.playbackRate=1));
 let vel=0; if(lenis) lenis.on('scroll',e=>{vel=Math.min(4,Math.abs(e.velocity)/12)});
+else { let ly=scrollY; addEventListener('scroll',()=>{ vel=Math.min(3,Math.abs(scrollY-ly)/40); ly=scrollY; },{passive:true}); }
 const tanim=tracks.map(t=>t.getAnimations()).flat(); let lastR=1;
 gsap.ticker.add(()=>{vel*=.92; if(vel<.005) vel=0; const pr=1+vel; if(Math.abs(pr-lastR)<.002) return; lastR=pr; tanim.forEach(a=>a.playbackRate=pr)});
 
-/* footer name rise */
 if(document.readyState==='complete') ScrollTrigger.refresh(); else addEventListener('load',()=>ScrollTrigger.refresh());
-}catch(e){ document.documentElement.classList.remove('js'); try{gsap.set('.hero__card img,.hero__face--front,.hero__word>span,.reveal-up,.split .wd,.nav',{clearProps:'all'});}catch(_){} }
+}catch(e){ showAll(); }
 }
 if(window.__tmDCL) motion(); else document.addEventListener('DOMContentLoaded',motion);
 })();
