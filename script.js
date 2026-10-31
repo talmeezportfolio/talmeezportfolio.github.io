@@ -76,7 +76,7 @@ function openGal(id){
     runs(g.items).forEach(r=>{
       const c3=r.k==='col'&&r.a.length>=3&&r.a.every(f=>Math.abs(f[1]/f[2]-1)<.05);
       h+=`<div class="gal__run gal__run--${r.k}${c3?' gal__run--col3':''}">`+r.a.map(f=>{const i=flat.length; flat.push({f,g:g.h});
-        const src='assets/img/'+f[0]+'?v=48', mid=MID.has(f[0])?`, assets/img/m/${f[0]}?v=48 1080w`:'', ss=f[3]?` srcset="assets/img/t/${f[0]}?v=48 720w${mid}, ${src} ${f[1]}w" sizes="${r.k==='col'?(c3?'(max-width:759px) calc(100vw - 36px), 33vw':'(max-width:759px) calc(100vw - 36px), 50vw'):(r.k==='strip'?'(max-width:759px) calc(100vw - 36px), min(1400px, 92vw)':'100vw')}"`:'';
+        const src='assets/img/'+f[0]+'?v=49', mid=MID.has(f[0])?`, assets/img/m/${f[0]}?v=49 1080w`:'', ss=f[3]?` srcset="assets/img/t/${f[0]}?v=49 720w${mid}, ${src} ${f[1]}w" sizes="${r.k==='col'?(c3?'(max-width:759px) calc(100vw - 36px), 33vw':'(max-width:759px) calc(100vw - 36px), 50vw'):(r.k==='strip'?'(max-width:759px) calc(100vw - 36px), min(1400px, 92vw)':'100vw')}"`:'';
         const lq=r.k!=='logo'&&window.__LQ&&__LQ[f[0]], bg=lq?` style="background-image:url(data:image/webp;base64,${lq})"`:'', pri=i<2?' loading="eager" fetchpriority="high"':' loading="lazy"';
         return `<button class="gal__it${lq?' has-lq':''}" data-i="${i}"${bg} aria-label="Open ${esc(g.h)} ${esc(f[4]||'')} image ${i+1} large"><img src="${src}"${ss} width="${f[1]}" height="${f[2]}" alt="${esc(g.h)}${f[4]?' — '+esc(f[4]):''}"${pri} decoding="async" style="max-width:${r.k==='logo'?Math.min(f[1],420)+'px':'100%'}"></button>`;}).join('')+'</div>';
     });
@@ -95,7 +95,7 @@ function closeGal(fromPop){
 }
 function showVw(i){
   vi=(i+flat.length)%flat.length; const {f,g}=flat[vi];
-  const full='assets/img/'+f[0]+'?v=48', my=vi;
+  const full='assets/img/'+f[0]+'?v=49', my=vi;
   /* show the already-loaded gallery image at once, then swap in the full-size file when it arrives */
   const th=$(`.gal__it[data-i="${vi}"] img`,gbody), quick=th&&th.complete&&th.naturalWidth>0?th.currentSrc:'';
   vimg.dataset.retry=0; vimg.onload=()=>vimg.classList.add('ready');
@@ -110,7 +110,7 @@ function showVw(i){
     pre.src=full;
   }
   $('#vwCap').textContent=g+(f[4]?' · '+f[4]:''); $('#vwCount').textContent=(vi+1)+' / '+flat.length;
-  [vi+1,vi-1].forEach(k=>{const n=flat[(k+flat.length)%flat.length]; if(n){const p=new Image(); p.src='assets/img/'+n.f[0]+'?v=48';}});
+  [vi+1,vi-1].forEach(k=>{const n=flat[(k+flat.length)%flat.length]; if(n){const p=new Image(); p.src='assets/img/'+n.f[0]+'?v=49';}});
 }
 function openVw(i){ vw.hidden=false; showVw(i); $('#vwClose').focus(); }
 function closeVw(){ vw.hidden=true; vimg.removeAttribute('src'); const b=$(`.gal__it[data-i="${vi}"]`,gbody); if(b) b.focus({preventScroll:true}); }
@@ -166,7 +166,8 @@ window.__tmMotion=1;
 const K=RM?1.7:1, D=RM?.55:1; /* reduced motion: slower, shorter moves */
 const H=document.documentElement;
 const safe=[];  /* every element GSAP hides, cleared on any failure */
-const showAll=()=>{ try{ gsap.killTweensOf(safe); gsap.set(safe,{clearProps:'opacity,visibility,clipPath,transform'}); }catch(_){ } H.classList.remove('mo'); $$('.about__text .w').forEach(w=>w.classList.add('on')); };
+let travelUndo=null;
+const showAll=()=>{ try{ travelUndo&&travelUndo(); }catch(_){ } try{ gsap.killTweensOf(safe); gsap.set(safe,{clearProps:'opacity,visibility,clipPath,transform'}); }catch(_){ } H.classList.remove('mo'); $$('.about__text .w').forEach(w=>w.classList.add('on')); };
 try{
 gsap.registerPlugin(ScrollTrigger);
 H.classList.add('mo');
@@ -200,17 +201,49 @@ if(hface){
     hero.addEventListener('mouseleave',()=>{ rx(0); ry(0); });
   }
 }
-if(hcard){
-  mm.add({d:'(min-width:701px)',m:'(max-width:700px)'},ctx=>{
-    const d=ctx.conditions.d;
-    gsap.fromTo(hcard,{rotation:0,rotationY:0,y:0,scale:1},{rotation:-5*D,rotationY:d?-16*D:-10*D,transformPerspective:1200,y:(d?90:50)*D,scale:.92,ease:'none',
-      scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:.6}});
+/* ---------- v49: travelling portrait card, hero -> services, with a 3D flip (photo front -> desk back), as in the reference video.
+   Flat-element flip: no preserve-3d / backface-visibility (some phone GPUs drop those faces). Past 90deg the card shows its
+   back face and gets an extra rotateY(180), which is exactly what a real 3D back face looks like. The services card is hidden
+   only while this is running, and comes back on any failure or when the travel lands. ---------- */
+const scard=$('#svcCard'), sstick=$('.svc__stick'), smedia=$('.svc__media');
+if(hcard&&scard&&sstick&&smedia){
+  mm.add({d:'(min-width:1000px)',m:'(max-width:999px)'},ctx=>{
+    const desk=ctx.conditions.d;
+    let T=0;
+    const setTop=()=>{ if(desk){ T=Math.max(90,(innerHeight-scard.offsetHeight)/2); sstick.style.setProperty('--svcTop',T+'px'); } else T=Math.round(innerHeight*.2); };
+    setTop();
+    const xp=gsap.getProperty(hcard,'xPercent')||0;
+    const geo=()=>{ /* card centre with no travel applied, slot centre at the hand-off scroll */
+      const op0=hcard.offsetParent.getBoundingClientRect(), w=hcard.offsetWidth, h=hcard.offsetHeight, sy=scrollY;
+      const cx=op0.left+hcard.offsetLeft+w/2+xp/100*w, cy=op0.top+sy+hcard.offsetTop+h/2;
+      const sw=scard.offsetWidth, op=scard.offsetParent.getBoundingClientRect();
+      const mr=smedia.getBoundingClientRect(), endScroll=mr.top+sy-T;
+      const tx=op.left+scard.offsetLeft+sw/2, sTop=desk?scard.offsetTop:(op.top-mr.top)+scard.offsetTop;
+      return {x:tx-cx, y:(endScroll+T+sTop+scard.offsetHeight/2)-cy, s:sw/w};
+    };
+    let g=geo(), back=false, landed=false;
+    const show=on=>{ landed=on; scard.style.visibility=on?'':'hidden'; hcard.style.visibility=on?'hidden':''; };
+    const Q={x:0,y:0,s:1,ry:0,rx:0,rz:0,f:0};
+    const hw=hcard.querySelector('.wave');
+    const render=()=>{
+      const ang=Q.ry+Q.f, b=Math.abs(ang)>90;
+      if(b!==back){ back=b; hcard.classList.toggle('is-back',b); if(hw) hw.style.visibility=b?'hidden':''; }
+      hcard.style.transform=`translate(${Q.x}px,${Q.y}px) translate(${xp}%,0) perspective(1200px) rotate(${Q.rz}deg) rotateY(${ang}deg) rotateX(${Q.rx}deg)${b?' rotateY(180deg)':''} scale(${Q.s})`;
+    };
+    hcard.classList.add('is-travel');
+    show(false);
+    const tl=gsap.timeline({onUpdate:render,scrollTrigger:{trigger:'.hero',start:'top top',endTrigger:smedia,end:()=>'top '+T+'px',scrub:RM?1:.6,invalidateOnRefresh:true,
+      onRefreshInit:()=>{ setTop(); },
+      onUpdate:s=>{ const l=s.progress>.995; if(l!==landed) show(l); hcard.style.zIndex=s.progress>.03?6:''; },
+      onLeaveBack:()=>{ show(false); hcard.style.zIndex=''; }}});
+    tl.to(Q,{x:()=>(g=geo(),g.x),y:()=>g.y,s:()=>g.s,ease:'power1.inOut',duration:1},0)
+      .to(Q,{ry:-32,rx:14,rz:-7,ease:'sine.inOut',duration:.5},0)
+      .to(Q,{ry:-14,rx:0,rz:-3,ease:'sine.inOut',duration:.5},.5)
+      .to(Q,{f:-180,ease:'power2.inOut',duration:.6},.2);
+    travelUndo=()=>{ try{ tl.scrollTrigger&&tl.scrollTrigger.kill(); tl.kill(); }catch(_){ } scard.style.visibility=''; hcard.style.visibility=''; hcard.style.zIndex=''; hcard.style.transform=''; hcard.classList.remove('is-back','is-travel'); if(hw) hw.style.visibility=''; };
+    return ()=>{ travelUndo&&travelUndo(); travelUndo=null; gsap.set(hcard,{xPercent:xp}); };
   });
 }
-/* services desk card swings in */
-const sc=$('#svcCard');
-if(sc) gsap.fromTo(sc,{transformPerspective:1200,rotationY:28*D,rotation:7*D,y:90*D,scale:.9},{transformPerspective:1200,rotationY:-14,rotation:-3,y:0,scale:1,ease:'none',
-  scrollTrigger:{trigger:'.svc__media',start:'top bottom',end:'top 30%',scrub:.6}});
 
 mm.add({d:'(min-width:701px)',m:'(max-width:700px)'},ctx=>{
   const a=ctx.conditions.d?18:8, st={trigger:'.hero',start:'top top',end:'bottom top',scrub:true};
@@ -235,6 +268,16 @@ if('IntersectionObserver' in window){
   /* watchdog: anything already scrolled past or on screen but still hidden is shown */
   const sweep=()=>$$('.split,.reveal-up,.acc__item,.exp__row,.about__links,.contact__rows,.form,.filters,.foot').forEach(el=>{ if(el.__go&&el.getBoundingClientRect().top<innerHeight) el.__go(); });
   addEventListener('load',()=>setTimeout(sweep,600)); setTimeout(sweep,5000); addEventListener('scroll',()=>{ clearTimeout(sweep.t); sweep.t=setTimeout(sweep,400); },{passive:true});
+}
+
+/* v49: number count-up when the stat cards come into view (reference video). The final number is in the page already; this only replays it. */
+if('IntersectionObserver' in window){
+  const nums=$$('.tstat strong').filter(n=>/^\d+/.test(n.textContent.trim()));
+  const nio=new IntersectionObserver(es=>es.forEach(e=>{ if(!e.isIntersecting) return; nio.unobserve(e.target);
+    const el=e.target, txt=el.textContent.trim(), m=txt.match(/^(\d+)(.*)$/), end=+m[1], suf=m[2], o={v:0};
+    gsap.to(o,{v:end,duration:1.6*K,ease:'power2.out',onUpdate:()=>{ el.textContent=Math.round(o.v)+suf; },onComplete:()=>{ el.textContent=txt; }});
+    setTimeout(()=>{ el.textContent=txt; },4000*K); }),{rootMargin:'0px 0px -10% 0px'});
+  nums.forEach(n=>nio.observe(n));
 }
 
 /* about text word scrub (words light up as you scroll) */

@@ -1,6 +1,6 @@
-@font-face{font-family:"League Gothic";src:url(assets/fonts/league-gothic.woff2?v=48) format("woff2");font-weight:400;font-display:swap}
-@font-face{font-family:"Anton";src:url(assets/fonts/anton.woff2?v=48) format("woff2");font-weight:400;font-display:swap}
-@font-face{font-family:"Inter";src:url(assets/fonts/inter.woff2?v=48) format("woff2");font-weight:100 900;font-display:swap}
+@font-face{font-family:"League Gothic";src:url(assets/fonts/league-gothic.woff2?v=49) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Anton";src:url(assets/fonts/anton.woff2?v=49) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Inter";src:url(assets/fonts/inter.woff2?v=49) format("woff2");font-weight:100 900;font-display:swap}
 :root{--bg:#1b1b1b;--bg2:#1c1c1c;--card:#202020;--line:rgba(255,255,255,.1);--fg:#f2f2f0;--mut:#9b9b97;--lime:#d3f36b;--lime2:#c4e85a;--ink:#111;--r:28px;--pad:clamp(18px,4vw,64px);--disp:"League Gothic","Bebas Neue","Arial Narrow",Impact,sans-serif}
 *,*::before,*::after{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;scroll-padding-top:90px}
@@ -533,3 +533,14 @@ html.modal-open,html.modal-open body{overflow:hidden}
 .gal__run .gal__it.has-lq{background-size:100% 100%;background-repeat:no-repeat}
 /* v47: looping effects pause only while their section is off screen */
 .is-off .ticker__track,.is-off.ticker .ticker__track,.hero.is-off .wave__hand,.hero.is-off .wave__flip,.hero.is-off .hero__scroll i,.nav.is-off .nav__status i{animation-play-state:paused}
+
+/* v49: travelling flip card (flat flip: the back face is shown past 90deg with an extra rotateY(180) on the card, so no mirroring needed) */
+.hero__card.is-back .hero__face--back{opacity:1;transform:none}
+.hero__card.is-back .hero__face--front{opacity:0}
+.hero__card.is-travel{will-change:transform}
+/* v49: hover states from the reference: accordion titles turn lime, outline buttons fill lime */
+@media (hover:hover) and (pointer:fine){
+.acc__btn:hover .acc__title{color:var(--lime)}
+.btn--line{transition:transform .3s cubic-bezier(.2,.8,.2,1),background-color .3s,color .3s}
+.btn--line:hover{background:var(--lime);color:var(--ink)}
+}
